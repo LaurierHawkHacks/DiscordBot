@@ -1,0 +1,24 @@
+{
+  "name": "DiscordBot",
+  "version": "1.0.0",
+  "description": "The official Discord bot for the HawkHacks Discord server.",
+  "main": "src/index.js",
+  "repository": "https://github.com/LaurierHawkHacks/DiscordBot",
+  "author": "Nausher Rao <SherRao15@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "discord-api-types": "^0.31.1",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
+    "googleapis": "39",
+    "js-logger": "^1.6.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.13.0"
+  },
+  "scripts": {
+    "test": "eslint src",
+    "start": "node src/index.js"
+  }
+}
