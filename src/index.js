@@ -1,13 +1,25 @@
 const fs = require("node:fs");
 const logger = require("js-logger");
 
-const { Client, Collection, Intents } = require("discord.js");
+const { Client, Collection, MessageEmbed, Intents } = require("discord.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
+const { NoPermissionEmbed } = require("./embeds/noPermission");
+
 require("dotenv").config();
 
 const TOKEN = process.env.DISCORD_TOKEN;
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        Intents.FLAGS.GUILD_MEMBERS,
+        Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+        Intents.FLAGS.GUILD_PRESENCES,
+    ],
+    partials: ["MESSAGE", "CHANNEL", "REACTION"]
+});
 
 function main() {
     logger.useDefaults({
@@ -37,7 +49,7 @@ function registerCommands() {
     client.commands = new Collection();
 
     const files = fs.readdirSync("./src/commands")
-        .filter(file => file.endsWith(".js") && file != "example.command.js");
+        .filter(file => file.endsWith(".js") && file != "example.js");
 
     for (const file of files) {
         const command = require(`./commands/${file}`);
@@ -72,14 +84,22 @@ function handleCommands() {
         const command = client.commands.get(interaction.commandName);
         if (!command)
             return;
+
+        const roleRequired = command.roleRequired;
+        if(interaction.member.roles.cache.has(roleRequired)) {
+            try {
+                await command.execute(interaction);
         
-        try {
-            await command.execute(interaction);
-        
-        } catch (error) {
-            logger.error(error);
-            await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
-        }
+            } catch (error) {
+                logger.error(error);
+                await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
+            }
+
+        } else
+            await interaction.reply({
+                embeds: [NoPermissionEmbed],
+                ephemeral: true,
+            });        
     });
 
 }
