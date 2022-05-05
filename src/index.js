@@ -84,6 +84,7 @@ function registerCommands() {
             );
 
             logger.info("Successfully reloaded application (/) commands.");
+        
         } catch (error) {
             logger.error(error);
         }
