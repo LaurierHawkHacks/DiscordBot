@@ -12,7 +12,8 @@ module.exports = {
         "no-undef": "warn",
         "indent": [
             "error",
-            4
+            4,
+            { "SwitchCase": 1 }
         ],
         "linebreak-style": [
             "off",
