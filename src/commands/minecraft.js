@@ -5,7 +5,7 @@ const data = new SlashCommandBuilder()
     .setName("minecraft")
     .setDescription("Links your Discord account to the (Java) Minecraft server and whitelists you.")
     .addStringOption(option =>
-        option.setName("minecraftUsername")
+        option.setName("username")
             .setDescription("Your Minecraft username to login to the server with..")
             .setRequired(true)
     );

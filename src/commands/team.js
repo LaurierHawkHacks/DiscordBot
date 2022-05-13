@@ -27,7 +27,7 @@ const data = new SlashCommandBuilder()
     
     .addSubcommand(subCommand => 
         subCommand.setName("delete")
-            .setDescription("Delete your team (only if you created the team).")
+            .setDescription("Delete your team only if you created the team.")
     )
 
     .addSubcommand(subCommand => 
@@ -36,11 +36,13 @@ const data = new SlashCommandBuilder()
     )
 
     .addSubcommand(subCommand => 
-        subCommand.setName("DELETECONFIRM")
+        subCommand.setName("dconfirm")
+            .setDescription("Delete your team only if you created the team.")
     )
 
     .addSubcommand(subCommand => 
-        subCommand.setName("LEAVECONFIRM")
+        subCommand.setName("lconfirm")
+            .setDescription("Leave your team.")
     );
 
 const execute = async (interaction) => {
@@ -98,7 +100,7 @@ const execute = async (interaction) => {
             break;
         }
 
-        case "DELETECONFIRM": {
+        case "confirm": {
             if(!team) 
                 return await interaction.reply("❌ You are not in a team!");
 
@@ -120,7 +122,7 @@ const execute = async (interaction) => {
             break;
         }
 
-        case "LEAVECONFIRM": {
+        case "lconfirm": {
             if(!team) 
                 return await interaction.reply("❌ You are not in a team!");
 
