@@ -6,7 +6,6 @@ const { Client, Collection, Intents } = require("discord.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const { NoPermissionEmbed } = require("./embeds/noPermission");
-
 require("dotenv").config();
 
 const TOKEN = process.env.DISCORD_TOKEN;
@@ -22,8 +21,7 @@ const client = new Client({
     partials: ["MESSAGE", "CHANNEL", "REACTION"]
 });
 
-function main() {
-
+async function main() {
     process.on("exit", () => {
         client.emit("shutdown");
 
@@ -114,7 +112,7 @@ function handleCommands() {
             await interaction.reply({
                 embeds: [NoPermissionEmbed],
                 ephemeral: true,
-            });        
+            });
     });
 
 }

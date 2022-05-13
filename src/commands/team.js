@@ -13,6 +13,34 @@ const data = new SlashCommandBuilder()
                     .setDescription("The name of the team.")
                     .setRequired(true)
             )
+    )
+
+    .addSubcommand(subCommand => 
+        subCommand.setName("invite")
+            .setDescription("Add a user to your team.")
+            .addUserOption(option =>
+                option.setName("target")
+                    .setDescription("The user to invite.")
+                    .setRequired(true)
+            )
+    )
+    
+    .addSubcommand(subCommand => 
+        subCommand.setName("delete")
+            .setDescription("Delete your team (only if you created the team).")
+    )
+
+    .addSubcommand(subCommand => 
+        subCommand.setName("leave")
+            .setDescription("Leave your team.")
+    )
+
+    .addSubcommand(subCommand => 
+        subCommand.setName("DELETECONFIRM")
+    )
+
+    .addSubcommand(subCommand => 
+        subCommand.setName("LEAVECONFIRM")
     );
 
 const execute = async (interaction) => {
@@ -27,59 +55,83 @@ const execute = async (interaction) => {
 
     const subCommand = interaction.options.getSubcommand();
     switch(subCommand) {
-        case "create":{
+        case "create": {
             if(team)
-                return await interaction.reply("You are already in a team!");
+                return await interaction.reply("❌ You are already in a team!");
 
-            createTeam(verifiedUser);
+            const name = interaction.options.getStringOption("name");
+            createTeam(verifiedUser, name);
             break;
         }
 
-        case "invite":{
+        case "invite": {
             if(!team) 
-                return await interaction.reply("You are not in a team!");
+                return await interaction.reply("❌ You are not in a team!");
 
             if(!captainId)
-                return await interaction.reply("You are not the captain of your team!");
+                return await interaction.reply("❌ You are not the captain of your team!");
 
-            const targetId = interaction.options.getStringOption("target");
+            const targetId = interaction.options.getUserOption("target").id;
             if(targetId == userId)
-                return await interaction.reply("You cannot invite yourself!");
+                return await interaction.reply("❌ You cannot invite yourself!");
 
             const verifiedTarget = getVerifiedUser(targetId);
             if(!verifiedTarget)
-                return await interaction.reply("This user is not verified!");
+                return await interaction.reply("❌ This user is not verified!");
 
             const targetTeamId = verifiedTarget.teamId;
             if(targetTeamId)
-                return await interaction.reply("This user is already in a team!");
+                return await interaction.reply("❌ This user is already in a team!");
 
             inviteUserToTeam(team, verifiedUser, verifiedTarget);
             break;
         }
 
-        case "delete":{
+        case "delete": {
             if(!team) 
-                return await interaction.reply("You are not in a team!");
+                return await interaction.reply("❌ You are not in a team!");
 
             if(!captainId)
-                return await interaction.reply("You are not the captain of your team!");
+                return await interaction.reply("❌ You are not the captain of your team!");
 
-            //TODO: ask if sure.
+            await interaction.reply("⚠️ If you're sure, please type `/tean DELETECONFIRM`");
+            break;
+        }
+
+        case "DELETECONFIRM": {
+            if(!team) 
+                return await interaction.reply("❌ You are not in a team!");
+
+            if(!captainId)
+                return await interaction.reply("❌ You are not the captain of your team!");
+
             deleteTeam(team);
             break;
         }
 
-        case "leave":{
+        case "leave": {
             if(!team) 
-                return await interaction.reply("You are not in a team!");
+                return await interaction.reply("❌ You are not in a team!");
 
-            //TODO: ask if sure.
+            if(team.captainId == userId)
+                return await interaction.reply("❌ You can't leave a team you're the captain of! You have to delete your team first!");
+
+            await interaction.reply("⚠️ If you're sure, please type `/tean LEAVECONFIRM`");
+            break;
+        }
+
+        case "LEAVECONFIRM": {
+            if(!team) 
+                return await interaction.reply("❌ You are not in a team!");
+
+            if(team.captainId == userId)
+                return await interaction.reply("❌ You can't leave a team you're the captain of! You have to delete your team first!");
+
             leaveTeam(team, verifiedUser);
             break;
         }
 
-        default: { await interaction.reply("You're using this command incorrectly!"); }
+        default: { await interaction.reply("❌ You're using this command incorrectly!"); }
     }
 };
 
