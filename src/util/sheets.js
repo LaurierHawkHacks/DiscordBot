@@ -32,7 +32,7 @@ const buildRange = (startCell, endCell, sheet = SHEETS_ID) => (`${sheet}!${start
  * @param {String} major the major dimension. When ROWS, the data is returned as an array of rows (cols => array of cols)
  * @returns a response from the Sheets API containing the data
  */
-const getRange = async (targetId = SHEETS_ID, range, major = "ROWS") =>
+const getRange = async (range, major = "ROWS", targetId = SHEETS_ID) =>
     sheets.values.get({
         spreadsheetId: targetId,
         range: range,
@@ -49,7 +49,7 @@ const getRange = async (targetId = SHEETS_ID, range, major = "ROWS") =>
  */
 const getColumn = async (col, targetId = SHEETS_ID, targetSheet = "Final Decisions (No Duplicates)") => {
     const range = buildRange(col, col, targetSheet);
-    const response = await getRange(targetId, range, "COLUMNS");
+    const response = await getRange(range, "COLUMNS", targetId);
 
     return (response.data.values ? response.data.values[0] : []);
 };
@@ -64,7 +64,7 @@ const getColumn = async (col, targetId = SHEETS_ID, targetSheet = "Final Decisio
  */
 const getRow = async (row, targetId = SHEETS_ID, targetSheet = "Final Decisions (No Duplicates)") => {
     const range = buildRange(`${row}`, `${row}`, targetSheet);
-    const response = await getRange(targetId, range, "ROWS");
+    const response = await getRange(range, "ROWS", targetId);
 
     return (response.data.values ? response.data.values[0] : []);
 };

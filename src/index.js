@@ -5,7 +5,7 @@ const logger = require("js-logger");
 const { Client, Collection, Intents } = require("discord.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
-const { NoPermissionEmbed } = require("./embeds/noPermission");
+const { config } = require("./config");
 require("dotenv").config();
 
 const TOKEN = process.env.DISCORD_TOKEN;
@@ -17,6 +17,7 @@ const client = new Client({
         Intents.FLAGS.GUILD_MEMBERS,
         Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
         Intents.FLAGS.GUILD_PRESENCES,
+        Intents.FLAGS.DIRECT_MESSAGES
     ],
     partials: ["MESSAGE", "CHANNEL", "REACTION"]
 });
@@ -26,11 +27,11 @@ async function main() {
         client.emit("shutdown");
 
         logger.info("Graceful shutdown completed. Exiting...");
-        console.log("Process terminated");
+        logger.info("Process terminated");
     });
 
     process.on("SIGINT", () => {
-        console.log("Caught interrupt signal");
+        logger.info("Caught interrupt signal");
         process.exit();
     });
 
@@ -39,11 +40,17 @@ async function main() {
         formatter: (messages, context) =>
             messages.unshift(`[${new Date().toUTCString()}] [${context.level.name}]: `)
     });
+    module.exports = { logger };
 
     client.once("ready", () => {
         registerCommands();
         handleCommands();
         logger.info("Bot loaded!");
+    });
+
+    client.on("messageCreate", message => {
+        if(message.channelId === config.discord.verificationChannelId && message.type != "APPLICATION_COMMAND")
+            message.delete();
     });
 
     client.login(TOKEN);
@@ -98,21 +105,21 @@ function handleCommands() {
         if (!command)
             return;
 
-        const roleRequired = command.roleRequired;
-        if(interaction.member.roles.cache.has(roleRequired)) {
-            try {
-                await command.execute(interaction);
+        // const roleRequired = command.roleRequired;
+        // if(interaction.member.roles.cache.has(roleRequired)) {
+        try {
+            await command.execute(interaction);
         
-            } catch (error) {
-                logger.error(error);
-                await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
-            }
+        } catch (error) {
+            logger.error(error);
+            await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
+        }
 
-        } else
-            await interaction.reply({
-                embeds: [NoPermissionEmbed],
-                ephemeral: true,
-            });
+        // } else
+        //     await interaction.reply({
+        //         embeds: [NoPermissionEmbed],
+        //         ephemeral: true,
+        //     });
     });
 
 }

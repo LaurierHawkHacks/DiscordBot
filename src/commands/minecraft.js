@@ -14,7 +14,7 @@ const execute = async (interaction) => {
     const userId = interaction.author.id;
     const verifiedUser = await getVerifiedUser(userId);
     if(!verifiedUser)
-        return await interaction.reply("This command can only be used by users who are verified!");
+        return await interaction.reply("❌ This command can only be used by users who are verified!");
 
     //get user from firestore table.
     //check if user already has a minecraft user in the table.

@@ -1,4 +1,4 @@
-const { getColumn, getRow } = require("./sheets"); 
+const { getColumn } = require("./sheets");
 const { db } = require("./firestore");
 const { config } = require("../config");
 
@@ -8,26 +8,20 @@ const getVerifiedUser = async (userId) => {
     return doc.exists ? doc.data() : null;
 };
 
-const getSheetsUser = async (userId) => {
-    const emailColumn = getColumn("E");
-    console.log(emailColumn);
-    // Get email column 
-    // Find which row the email appears on.
-    // get the row index.
-    // get the email row at that index.
-    // return the row.
-    return userId;
+const isAccepted = async (userId, email) => {
+    const emailColumn = await getColumn("A", config.gsheets.spreadsheetId, "Accepted Emails");
+    return emailColumn.includes(email);
 };
 
 const addVerifiedUser = async (email, member) => {
-    try {
-        await db.collection("verifiedUsers").doc(member.id)
-            .set({ email: email, teamId: null, teamRequests: [], mc: [] });
-        
-        await member.roles.add(config.discord.verifiedRoleId);
-        return true;
+    await db.collection("verifiedUsers").doc(member.id)
+        .set({ email: email, teamId: null, teamRequests: [], mc: [] });
 
-    } catch (error) { return false; }
+    setTimeout(async () => {    
+        await member.roles.add(config.discord.verifiedRoleId);
+    }, 5000);
+
+    return true;
 };
 
-module.exports = { getVerifiedUser, getSheetsUser, addVerifiedUser };
+module.exports = { getVerifiedUser, isAccepted, addVerifiedUser };

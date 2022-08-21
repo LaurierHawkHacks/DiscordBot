@@ -16,9 +16,12 @@ module.exports = {
         },
 
         discord: {
-            teamCategoryId: "970876620648882186",
-            verifiedRoleId: "962115254018527372"
-
+            teamTextCategoryIds: ["970876620648882186", "974828419311337502", "974889688307499078", "974889712080781353"],
+            teamVoiceCategoryIds: ["974822922306859048", "974828362784706611", "974879777230049300", "974889785657278524"],
+            teamCreationChannelId: "970876864648347658",
+            lftChannelId: "962121464692215858",
+            verifiedRoleId: "962115254018527372",
+            verificationChannelId: "974726673620680754"
         }
     }
 };
